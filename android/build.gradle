@@ -6,13 +6,32 @@ plugins {
 group = 'expo.modules.rnvideocompressor'
 version = '0.1.0'
 
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 android {
   namespace "expo.modules.rnvideocompressor"
+  compileSdkVersion safeExtGet("compileSdkVersion", 34)
   defaultConfig {
+    minSdkVersion safeExtGet("minSdkVersion", 24)
+    targetSdkVersion safeExtGet("targetSdkVersion", 34)
     versionCode 1
     versionName "0.1.0"
+  }
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+  kotlinOptions {
+    jvmTarget = "17"
   }
   lintOptions {
     abortOnError false
   }
+}
+
+dependencies {
+  implementation project(':expo-modules-core')
+  implementation 'io.deepmedia.community:transcoder-android:0.11.2'
 }
