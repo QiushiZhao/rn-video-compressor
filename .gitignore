@@ -43,6 +43,10 @@ android/keystores/debug.keystore
 #
 example/ios/Pods
 
+# Expo prebuild generated native dirs
+example/ios/
+example/android/
+
 # Ruby
 example/vendor/
 
