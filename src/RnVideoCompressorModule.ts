@@ -1,12 +1,25 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { requireNativeModule } from 'expo-modules-core';
 
-import { RnVideoCompressorModuleEvents } from './RnVideoCompressor.types';
+interface NativeModule {
+  probeVideo(inputUri: string): Promise<{
+    hasVideoTrack: boolean;
+    width: number;
+    height: number;
+    bitrate: number;
+  }>;
 
-declare class RnVideoCompressorModule extends NativeModule<RnVideoCompressorModuleEvents> {
-  PI: number;
-  hello(): string;
-  setValueAsync(value: string): Promise<void>;
+  transcode(
+    inputUri: string,
+    outputUri: string,
+    params: {
+      width: number;
+      height: number;
+      videoBitrate: number;
+      audioBitrate: number;
+      fps: number;
+    },
+    onProgress: (progress: number) => void
+  ): Promise<void>;
 }
 
-// This call loads the native module object from the JSI.
-export default requireNativeModule<RnVideoCompressorModule>('RnVideoCompressor');
+export default requireNativeModule<NativeModule>('RnVideoCompressor');

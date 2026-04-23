@@ -1,50 +1,36 @@
 package expo.modules.rnvideocompressor
 
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.net.URL
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 
 class RnVideoCompressorModule : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
   override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('RnVideoCompressor')` in JavaScript.
     Name("RnVideoCompressor")
 
-    // Defines constant property on the module.
-    Constant("PI") {
-      Math.PI
+    AsyncFunction("probeVideo") { inputUri: String, promise: Promise ->
+      // Implemented in Task 8
+      promise.reject("ERR_ENCODING_FAILED", "probeVideo not yet implemented", null)
     }
 
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
-    }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
-    }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
-    View(RnVideoCompressorView::class) {
-      // Defines a setter for the `url` prop.
-      Prop("url") { view: RnVideoCompressorView, url: URL ->
-        view.webView.loadUrl(url.toString())
-      }
-      // Defines an event that the view can send to JavaScript.
-      Events("onLoad")
+    AsyncFunction("transcode") { inputUri: String,
+                                  outputUri: String,
+                                  params: TranscodeParams,
+                                  onProgress: JavaScriptFunction<Unit>,
+                                  promise: Promise ->
+      // Implemented in Task 10
+      promise.reject("ERR_ENCODING_FAILED", "transcode not yet implemented", null)
     }
   }
+}
+
+class TranscodeParams : Record {
+  @Field var width: Int = 0
+  @Field var height: Int = 0
+  @Field var videoBitrate: Int = 0
+  @Field var audioBitrate: Int = 0
+  @Field var fps: Int = 0
 }
