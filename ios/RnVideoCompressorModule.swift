@@ -25,8 +25,32 @@ public class RnVideoCompressorModule: Module {
       onProgress: JavaScriptFunction<Void>,
       promise: Promise
     ) in
-      // Implemented in Task 9
-      promise.reject("ERR_ENCODING_FAILED", "transcode not yet implemented")
+      let swiftParams = TranscodeParamsSwift(
+        width: params.width,
+        height: params.height,
+        videoBitrate: params.videoBitrate,
+        audioBitrate: params.audioBitrate,
+        fps: params.fps
+      )
+
+      VideoCompressor.transcode(
+        inputUri: inputUri,
+        outputUri: outputUri,
+        params: swiftParams,
+        progress: { p in
+          try? onProgress.call(Double(p))
+        },
+        completion: { result in
+          switch result {
+          case .success:
+            promise.resolve(nil)
+          case .failure(let err):
+            let msg = err.localizedDescription
+            let code = msg.lowercased().contains("no video") ? "ERR_UNSUPPORTED_SOURCE" : "ERR_ENCODING_FAILED"
+            promise.reject(code, msg)
+          }
+        }
+      )
     }
   }
 }
