@@ -30,8 +30,24 @@ class RnVideoCompressorModule : Module() {
                                   params: TranscodeParams,
                                   onProgress: JavaScriptFunction<Unit>,
                                   promise: Promise ->
-      // Implemented in Task 10
-      promise.reject("ERR_ENCODING_FAILED", "transcode not yet implemented", null)
+      val ktParams = TranscodeParamsKt(
+        width = params.width,
+        height = params.height,
+        videoBitrate = params.videoBitrate,
+        audioBitrate = params.audioBitrate,
+        fps = params.fps,
+      )
+
+      VideoCompressor.transcode(
+        inputUri, outputUri, ktParams,
+        onProgress = { p -> onProgress(p) },
+        onCompleted = { promise.resolve(null) },
+        onFailed = { err ->
+          val msg = err.message ?: err.javaClass.simpleName
+          val code = if (msg.contains("no video", ignoreCase = true)) "ERR_UNSUPPORTED_SOURCE" else "ERR_ENCODING_FAILED"
+          promise.reject(code, msg, err)
+        }
+      )
     }
   }
 }
