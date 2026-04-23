@@ -28,12 +28,12 @@
   "author": "qiushizhao <azhe07912@gmail.com> (https://github.com/qiushizhao)",
   "license": "MIT",
   "homepage": "https://github.com/qiushizhao/rn-video-compressor#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "@types/node": "^25.6.0",
     "@types/react": "~19.1.1",
-    "expo-module-scripts": "^55.0.2",
     "expo": "^55.0.16",
+    "expo-module-scripts": "^55.0.2",
     "jest": "^29.7.0",
     "react-native": "0.82.1",
     "ts-jest": "^29.1.2"
