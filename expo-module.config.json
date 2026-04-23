@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["RnVideoCompressorModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.rnvideocompressor.RnVideoCompressorModule"]
+  }
+}
