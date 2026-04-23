@@ -12,8 +12,17 @@ class RnVideoCompressorModule : Module() {
     Name("RnVideoCompressor")
 
     AsyncFunction("probeVideo") { inputUri: String, promise: Promise ->
-      // Implemented in Task 8
-      promise.reject("ERR_ENCODING_FAILED", "probeVideo not yet implemented", null)
+      try {
+        val result = VideoProbe.probe(inputUri)
+        promise.resolve(mapOf(
+          "hasVideoTrack" to result.hasVideoTrack,
+          "width" to result.width,
+          "height" to result.height,
+          "bitrate" to result.bitrate,
+        ))
+      } catch (e: Throwable) {
+        promise.reject("ERR_UNSUPPORTED_SOURCE", e.message ?: "probe failed", e)
+      }
     }
 
     AsyncFunction("transcode") { inputUri: String,
