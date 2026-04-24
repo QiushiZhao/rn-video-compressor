@@ -28,7 +28,7 @@ class RnVideoCompressorModule : Module() {
     AsyncFunction("transcode") { inputUri: String,
                                   outputUri: String,
                                   params: TranscodeParams,
-                                  onProgress: JavaScriptFunction<Unit>,
+                                  onProgress: JavaScriptFunction<Any?>,
                                   promise: Promise ->
       val ktParams = TranscodeParamsKt(
         width = params.width,
@@ -40,7 +40,7 @@ class RnVideoCompressorModule : Module() {
 
       VideoCompressor.transcode(
         inputUri, outputUri, ktParams,
-        onProgress = { p -> onProgress(p) },
+        onProgress = { p -> runCatching { onProgress(p) } },
         onCompleted = { promise.resolve(null) },
         onFailed = { err ->
           val msg = err.message ?: err.javaClass.simpleName
