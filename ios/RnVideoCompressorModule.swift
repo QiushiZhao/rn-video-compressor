@@ -4,6 +4,11 @@ public class RnVideoCompressorModule: Module {
   public func definition() -> ModuleDefinition {
     Name("RnVideoCompressor")
 
+    // See Kotlin module for rationale — JS callbacks from native worker
+    // threads are unsafe; events are bridge-dispatched and safe from any
+    // thread. JS side subscribes and filters by the per-call `id`.
+    Events("onTranscodeProgress")
+
     AsyncFunction("probeVideo") { (inputUri: String, promise: Promise) in
       do {
         let result = try VideoProbe.probe(fileUri: inputUri)
@@ -12,6 +17,9 @@ public class RnVideoCompressorModule: Module {
           "width": result.width,
           "height": result.height,
           "bitrate": result.bitrate,
+          "duration": result.duration,
+          "videoMime": result.videoCodec,
+          "hasDecoder": result.hasDecoder,
         ])
       } catch {
         promise.reject("ERR_UNSUPPORTED_SOURCE", error.localizedDescription)
@@ -22,7 +30,7 @@ public class RnVideoCompressorModule: Module {
       inputUri: String,
       outputUri: String,
       params: TranscodeParams,
-      onProgress: JavaScriptFunction<Void>,
+      id: String,
       promise: Promise
     ) in
       let swiftParams = TranscodeParamsSwift(
@@ -37,8 +45,11 @@ public class RnVideoCompressorModule: Module {
         inputUri: inputUri,
         outputUri: outputUri,
         params: swiftParams,
-        progress: { p in
-          try? onProgress.call(Double(p))
+        progress: { [weak self] p in
+          self?.sendEvent("onTranscodeProgress", [
+            "id": id,
+            "progress": Double(p),
+          ])
         },
         completion: { result in
           switch result {
